@@ -50,6 +50,9 @@ OBJECTS += MOVE/MOVE.o
 OBJECTS += Queue/Queue.o
 OBJECTS += SERVO/SERVO.o
 OBJECTS += VNH/VNH.o
+OBJECTS += LSM303D/LSM303D.o
+OBJECTS += L3GD20H/L3GD20H.o
+OBJECTS += CIMU/CIMU.o
 OBJECTS += main.o
 
  SYS_OBJECTS += mbed/TARGET_NUCLEO_F401RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_flash_ramfunc.o
@@ -151,6 +154,9 @@ OBJECTS += main.o
 
 INCLUDE_PATHS += -I../
 INCLUDE_PATHS += -I../.
+INCLUDE_PATHS += -I../LSM303D
+INCLUDE_PATHS += -I../L3GD20H
+INCLUDE_PATHS += -I../CIMU
 INCLUDE_PATHS += -I../MOVE
 INCLUDE_PATHS += -I../Queue
 INCLUDE_PATHS += -I../SERVO
@@ -329,10 +335,10 @@ all: $(PROJECT).bin $(PROJECT).hex size
 	+@echo "Assemble: $(notdir $<)"
 	@$(AS) -c $(ASM_FLAGS) $(INCLUDE_PATHS) -o $@ $<
 
-.S.o:
-	+@$(call MAKEDIR,$(dir $@))
-	+@echo "Assemble: $(notdir $<)"
-	@$(AS) -c $(ASM_FLAGS) $(INCLUDE_PATHS) -o $@ $<
+#.S.o:
+#	+@$(call MAKEDIR,$(dir $@))
+#	+@echo "Assemble: $(notdir $<)"
+#	@$(AS) -c $(ASM_FLAGS) $(INCLUDE_PATHS) -o $@ $<
 
 .c.o:
 	+@$(call MAKEDIR,$(dir $@))

@@ -143,7 +143,7 @@ private:
             }      
         }
     }
-    CQueue<7> m_buffer;
+    CQueue<unsigned char, 7> m_buffer;
     MOVE& m_car;
     unsigned char m_commandID;
     float m_commandValue;
