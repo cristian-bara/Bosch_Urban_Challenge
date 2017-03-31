@@ -8,10 +8,8 @@
 #include <sstream>
 #include "L3GD20H.h"
 #include "LSM303D.h"
+#include "CBNO055.h"
 
-/*
-
-*/
 
 Serial     rpi(USBTX, USBRX); 
 MOVE       mycar(D9, D3, D2, D4, A0);
@@ -50,6 +48,7 @@ bool isBounded(float val, float min, float max)
 {
     return ((val >= min) && (val < max));
 }
+
 
 class CIMU : public CTask
 {
@@ -179,13 +178,15 @@ const float g_baseTick = 0.0001; // seconds
 CBlinker        g_blinker       (0.5    / g_baseTick);
 CEchoer         g_echoer        (10     / g_baseTick);
 CCurrentReader  g_currentReader (0.01   / g_baseTick);
-CIMU            g_imu           (0.01   / g_baseTick);
+// CIMU            g_imu           (0.01   / g_baseTick);
+CBNO055         g_bno055        (0.01   / g_baseTick,0.01);
 
 CTask* g_taskList[] = {
     &g_blinker,
     &g_echoer,
     &g_currentReader,
-    &g_imu
+    &g_bno055
+    // &g_imu
     };
 //    CTask(100)};
 
@@ -230,23 +231,20 @@ int main()
             }      
             //continue;
         }
-        if (g_imu.newDataAvailable())
-        {
-            CIMU::CIMUData l_imuData = g_imu.getRawIMUData();
-            char s[150];
-            uint32_t l = sprintf(s,"#[%010d]RIMU:%10.4f;%10.4f;%10.4f;%10.4f;%10.4f;%10.4f;%10.4f;%10.4f;%10.4f;;\n\r",
-                timer_100us.get(),
-                l_imuData.ax,
-                l_imuData.ay,
-                l_imuData.az,
-                l_imuData.mx,
-                l_imuData.my,
-                l_imuData.mz,
-                l_imuData.gx,
-                l_imuData.gy,
-                l_imuData.gz
-                );
-            //g_rpiWriteBuffer.push(s,l);                
+        if(g_bno055.isNewDataAvailable()){
+           CBNO055::CBNO055_Data data=g_bno055.getData();
+           char s[150];
+           sprintf(s,"#[%010d]BNO055:%10.4f;%10.4f;%10.4f;%10.4f;%10.4f;%10.4f;%10.4f;%10.4f;%10.4f;;\n\r",
+                    timer_100us.get(),
+                    data.lin_acc_x,
+                    data.lin_acc_y,
+                    data.lin_acc_z,
+                    data.grav_acc_x,
+                    data.grav_acc_y,
+                    data.grav_acc_z,
+                    data.euler_h,
+                    data.euler_p,
+                    data.euler_r);
             rpi.printf("%s",s);
         }
         g_taskManager.mainCallback();
