@@ -15,9 +15,8 @@ class CBNO055: public CTask
         
 
 
-        CBNO055(uint32_t f_period,float period) : CTask(f_period),nbo055(D14,D15,D8) {
+        CBNO055(uint32_t f_period) : CTask(f_period),nbo055(D14,D15,D8) {
             dataAvailable=false;
-            this->period_sec=period;
             nbo055.reset();
         }
 
@@ -52,7 +51,6 @@ class CBNO055: public CTask
     CBNO055_Data data;
     
     bool dataAvailable;
-    float period_sec;
 };
 
 #endif

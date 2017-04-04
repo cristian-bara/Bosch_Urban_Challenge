@@ -2,6 +2,7 @@
 #include "Queue.h"
 #include "Timer/Timer.h"
 #include "commandInterpreter.h"
+#include "SplineInterpreter.h"
 #include "TaskManager.h"
 #include "MOVE.h"
 #include <string>
@@ -9,13 +10,15 @@
 #include "L3GD20H.h"
 #include "LSM303D.h"
 #include "CBNO055.h"
+#include "MotionControl.h"
+
 
 
 Serial     rpi(USBTX, USBRX); 
 MOVE       mycar(D9, D3, D2, D4, A0);
 AnalogIn   currentSense(A2);
 
-CQueue<char, 1000> g_rpiReadBuffer;
+CQueue< char, 1000> g_rpiReadBuffer;
 CQueue<char, 1000> g_rpiWriteBuffer;
 
 
@@ -156,8 +159,8 @@ private:
     virtual void _run()
     {
         char s[100];
-        uint32_t l = sprintf(s,"#[%010d]CRNT:%10.4f;%10.4f;;\n\r",timer_100us.get(),m_slidingMeanFilter(mycar.getVNH().GetCurrent()),mycar.getVNH().GetCurrent());
-        //g_rpiWriteBuffer.push(s,l);
+        uint32_t l = sprintf(s,"#[%010d]CRNT:%10.4f;%10.4f;;\r\n",timer_100us.get(),m_slidingMeanFilter(mycar.getVNH().GetCurrent()),mycar.getVNH().GetCurrent());
+        // g_rpiWriteBuffer.push(s,l);
         rpi.printf("%s",s);
     } 
     CSlidingMeanFilter<200> m_slidingMeanFilter;
@@ -177,24 +180,29 @@ const float g_baseTick = 0.0001; // seconds
 
 CBlinker        g_blinker       (0.5    / g_baseTick);
 CEchoer         g_echoer        (10     / g_baseTick);
-CCurrentReader  g_currentReader (0.01   / g_baseTick);
+CCurrentReader  g_currentReader (0.5   / g_baseTick);
 // CIMU            g_imu           (0.01   / g_baseTick);
-CBNO055         g_bno055        (0.01   / g_baseTick,0.01);
+CBNO055         g_bno055        (0.01   / g_baseTick);
+
+CSplineInterpreter g_splineInterpreter;
+CMotionControl  g_motionControl (0.01   / g_baseTick,mycar,g_splineInterpreter,0.01);
+
 
 CTask* g_taskList[] = {
     &g_blinker,
     &g_echoer,
     &g_currentReader,
-    &g_bno055
+    &g_bno055,
+    &g_motionControl
     // &g_imu
     };
 //    CTask(100)};
 
 CTaskManager g_taskManager(g_taskList, sizeof(g_taskList)/sizeof(CTask*), g_baseTick);
+
 //CTaskManager g_taskManager(g_taskList, 2, g_baseTick);
+// CCommandInterpreter commandInterpreter(mycar);
 
-
-CCommandInterpreter commandInterpreter(mycar);
 
 int main() 
 {
@@ -207,34 +215,39 @@ int main()
     rpi.printf("#################\n\r");
     rpi.printf("\n\r");
 
-    timer_100us.start();       
+    timer_100us.start();  
     while(1) 
     {
         while(!g_rpiWriteBuffer.isEmpty() && rpi.writeable())
         {
-            rpi.putc(g_rpiWriteBuffer.pop());         
-        //    continue;
+            char l_c=g_rpiWriteBuffer.pop();
+            
         }
+        g_rpiWriteBuffer.empty();
         while(!g_rpiReadBuffer.isEmpty() && !g_rpiWriteBuffer.isFull())
         {
+            
             char l_c = g_rpiReadBuffer.pop();
-            commandInterpreter.interpretChar(l_c);
+            g_splineInterpreter.put(l_c);
+            // commandInterpreter.interpretChar(l_c);
             g_rpiWriteBuffer.push(l_c);    
             //continue;
         }
         while(!g_rpiReadBuffer.isFull() && rpi.readable())
         {
+            int l=rpi.readable();
             while(rpi.readable())
-            {
-                char l_c = rpi.getc();
-                g_rpiReadBuffer.push(l_c);  
+            { 
+                 char l_c = rpi.getc();
+                 rpi.printf("%c",l_c);
+                 g_rpiReadBuffer.push(l_c);  
             }      
             //continue;
         }
         if(g_bno055.isNewDataAvailable()){
            CBNO055::CBNO055_Data data=g_bno055.getData();
            char s[150];
-           sprintf(s,"#[%010d]BNO055:%10.4f;%10.4f;%10.4f;%10.4f;%10.4f;%10.4f;%10.4f;%10.4f;%10.4f;;\n\r",
+           int32_t l=sprintf(s,"#[%010d]BNO055:%10.4f;%10.4f;%10.4f;%10.4f;%10.4f;%10.4f;%10.4f;%10.4f;%10.4f;;\r\n",
                     timer_100us.get(),
                     data.lin_acc_x,
                     data.lin_acc_y,
@@ -245,12 +258,31 @@ int main()
                     data.euler_h,
                     data.euler_p,
                     data.euler_r);
+            // g_rpiWriteBuffer.push(s,l); 
+            // rpi.printf("%s",s);
+        }
+        if(g_splineInterpreter.isNewDataAvailable(0)){
+            CSplineInterpreter::SplineInterpreter_Data data=g_splineInterpreter.getData(0);
+            char s[150];
+            int32_t l=sprintf(s,"#[%010d]INTR0:%0.004f;%0.004f;%0.004f;%0.004f;%0.004f;%0.004f;%0.004f;%0.004f;%0.004f;;\r\n",
+                     timer_100us.get(),
+                     data.a.real(),
+                     data.a.imag(),
+                     data.b.real(),
+                     data.b.imag(),
+                     data.c.real(),
+                     data.c.imag(),
+                     data.d.real(),
+                     data.d.imag(),
+                     data.duration_sec
+                     );
+            // g_rpiWriteBuffer.push(s,l); 
             rpi.printf("%s",s);
         }
         g_taskManager.mainCallback();
-        if (timer_100us.get()%10 == 0)
-        {
-            commandInterpreter.executeCommand();
-        }
+        // if (timer_100us.get()%10 == 0)
+        // {
+        //     commandInterpreter.executeCommand();
+        // }
     }
 }
