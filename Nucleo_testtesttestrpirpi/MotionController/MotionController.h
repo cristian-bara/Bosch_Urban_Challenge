@@ -23,6 +23,19 @@ public:
         CMotionController* self = static_cast<CMotionController*>(obj);
         self->serialCallback(a,b);
     }
+    void reset()
+    {   
+        m_speed = 0;
+        m_angle = 0;
+    }
+    float getSpeed() 
+    {
+        return m_speed;
+    }
+    float getAngle() 
+    {
+        return m_angle;
+    }
 private:
     virtual void _run()
     {
@@ -30,7 +43,8 @@ private:
         m_car.Speed(m_speed);
         CIMU::CIMUData l_imuData = m_imu.getRawIMUData();        
         m_serialPort.printf("@MCTL:%8.4f;%8.4f;%8.4f;%8.4f;%8.4f;%8.4f;%8.4f;%8.4f;%8.4f;%8.4f;%8.4f;%8.4f;;\r\n"
-            ,m_speed,m_angle
+            ,m_speed
+            ,m_angle
             ,m_car.getVNH().GetCurrent()
             ,l_imuData.ax
             ,l_imuData.ay
