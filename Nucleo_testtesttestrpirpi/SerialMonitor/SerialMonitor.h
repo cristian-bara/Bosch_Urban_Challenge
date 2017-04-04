@@ -61,7 +61,7 @@ private:
 
     virtual void _run()
     {
-        if ((!m_RxBuffer.isEmpty()) && (!m_TxBuffer.isFull()))
+        if ((!m_RxBuffer.isEmpty()))
         {
             char l_c = m_RxBuffer.pop();
             m_serialPort.printf("%c",l_c);
@@ -78,19 +78,19 @@ private:
                 {
                     if ((';' == m_parseIt[-3]) && (';' == m_parseIt[-2]) && ('\r' == m_parseIt[-1]))
                     {
-                        char msgID[5];
-                        char msg[256];
+                        char l_msgID[5];
+                        char l_msg[256];
 
-                        uint32_t res = sscanf(m_parseBuffer.data(),"#%4s:%s;;",msgID,msg);
+                        uint32_t res = sscanf(m_parseBuffer.data(),"#%4s:%s;;",l_msgID,l_msg);
                         if (res == 2)
                         {
-                            auto l_pair = m_serialSubscriberMap.find(msgID);
+                            auto l_pair = m_serialSubscriberMap.find(l_msgID);
                             if (l_pair != m_serialSubscriberMap.end())
                             {
                                 char l_resp[256] = "no response given";
                                 string s(l_resp);
-                                l_pair->second(msg,l_resp);
-                                m_serialPort.printf("@%s:%s\r\n",msgID,l_resp);
+                                l_pair->second(l_msg,l_resp);
+                                m_serialPort.printf("@%s:%s\r\n",l_msgID,l_resp);
                             }
                         }
                         m_parseIt = m_parseBuffer.begin();
