@@ -28,8 +28,8 @@ public:
         l_imuData.my = m_my;
         l_imuData.mz = m_mz;
         l_imuData.gx = m_gyr[0]*1.0f;
-        l_imuData.gx = m_gyr[1]*1.0f;
-        l_imuData.gx = m_gyr[2]*1.0f;
+        l_imuData.gy = m_gyr[1]*1.0f;
+        l_imuData.gz = m_gyr[2]*1.0f;
 
         m_dataAvailable = false;
         return l_imuData;
