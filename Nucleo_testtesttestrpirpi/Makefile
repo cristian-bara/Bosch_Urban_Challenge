@@ -47,6 +47,8 @@ PROJECT := Nucleo_testtesttestrpirpi
 # Objects and Paths
 
 OBJECTS += MOVE/MOVE.o
+OBJECTS += SerialMonitor/SerialMonitor.o
+OBJECTS += MotionController/MotionController.o
 OBJECTS += Queue/Queue.o
 OBJECTS += SERVO/SERVO.o
 OBJECTS += VNH/VNH.o
@@ -156,6 +158,8 @@ OBJECTS += main.o
 
 INCLUDE_PATHS += -I../
 INCLUDE_PATHS += -I../.
+INCLUDE_PATHS += -I../MotionController
+INCLUDE_PATHS += -I../SerialMonitor
 INCLUDE_PATHS += -I../Blinker
 INCLUDE_PATHS += -I../Echoer
 INCLUDE_PATHS += -I../LSM303D

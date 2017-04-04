@@ -2,6 +2,8 @@
 #define _IMU_
 
 #include <TaskManager.h>
+#include <L3GD20H.h>
+#include <LSM303D.h>
 
 class CIMU : public CTask
 {
