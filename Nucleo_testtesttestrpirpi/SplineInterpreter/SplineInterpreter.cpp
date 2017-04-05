@@ -1,61 +1,20 @@
 #include "SplineInterpreter.h"
 
-void CSplineInterpreter::put(char i_c){
-    if(i_c=='#'){
-        this->m_buffer.empty();
-        this->m_buffer.push(i_c);
-        
-    }
-    else if(i_c=='\r'){
-        decodificateMessage();
-    }
-    else{
-        this->m_buffer.push(i_c);
-    }
-}
-
-
-void CSplineInterpreter::decodificateMessage(){
-    // char l_buffer[SPLINE_MESSAGE_LENGTH];
-    char l_buffer2[SPLINE_MESSAGE_LENGTH];
-    int buffer_length=m_buffer.getSize();
-    for(int i=0;i<buffer_length;++i) {
-        l_buffer2[i]=this->m_buffer.pop();
-    }
-    SplineInterpreter_Data new_data;
-    
-    float a_x,a_y,b_x,b_y,c_x,c_y,d_x,d_y,duration_sec;
-    int l_b=sscanf(l_buffer2,"#SPLN;%f;%f;%f;%f;%f;%f;%f;%f;%f;;\n\r",
-                                    &a_x,
-                                    &a_y,
-                                    &b_x,
-                                    &b_y,
-                                    &c_x,
-                                    &c_y,
-                                    &d_x,
-                                    &d_y,
-                                    &duration_sec);
-    if(l_b==9){
-        setData(a_x,a_y,b_x,b_y,c_x,c_y,d_x,d_y,duration_sec);
-    }   
-}
-
-void CSplineInterpreter::setData(   float       a_x,
-                                    float       a_y,
-                                    float       b_x,
-                                    float       b_y,
-                                    float       c_x,
-                                    float       c_y,
-                                    float       d_x,
-                                    float       d_y,
-                                    float       duration_sec){
-    this->data.a=std::complex<float>(a_x,a_y);
-    this->data.b=std::complex<float>(b_x,b_y);
-    this->data.c=std::complex<float>(c_x,c_y);
-    this->data.d=std::complex<float>(d_x,d_y);
-    this->data.duration_sec=duration_sec;
+void CSplineInterpreter::setData(   float       f_a_x,
+                                    float       f_a_y,
+                                    float       f_b_x,
+                                    float       f_b_y,
+                                    float       f_c_x,
+                                    float       f_c_y,
+                                    float       f_d_x,
+                                    float       f_d_y,
+                                    float       f_duration_sec){
+    this->data.a=std::complex<float>(f_a_x,f_a_y);
+    this->data.b=std::complex<float>(f_b_x,f_b_y);
+    this->data.c=std::complex<float>(f_c_x,f_c_y);
+    this->data.d=std::complex<float>(f_d_x,f_d_y);
+    this->data.duration_sec=f_duration_sec;
     this->isNewData=true;
-    setNotAccessedAll();
 }
 
 
@@ -71,22 +30,23 @@ CSplineInterpreter::SplineInterpreter_Data CSplineInterpreter::getData(){
 }
 
 
-CSplineInterpreter::SplineInterpreter_Data CSplineInterpreter::getData(int32_t id){
-     if(id>=0 && id<NR_ACCESSED_SPLN_INTR){
-        this->accessed[id]=true;
+void CSplineInterpreter::serialCallback(char const * f_message, char * f_response){
+     float a_x,a_y,b_x,b_y,c_x,c_y,d_x,d_y,duration_sec;
+     int32_t nrData=sscanf(f_message,"%f;%f;%f;%f;%f;%f;%f;%f;%f",
+                                    &a_x,
+                                    &a_y,
+                                    &b_x,
+                                    &b_y,
+                                    &c_x,
+                                    &c_y,
+                                    &d_x,
+                                    &d_y,
+                                    &duration_sec);
+    if(9==nrData){
+        setData(a_x,a_y,b_x,b_y,c_x,c_y,d_x,d_y,duration_sec);
+        sprintf(f_response,"ack;;");
     }
-    SplineInterpreter_Data data;
-    data.a=this->data.a;
-    data.b=this->data.b;
-    data.c=this->data.c;
-    data.d=this->data.d;
-    data.duration_sec=this->data.duration_sec;
-    return data;
-}
-
-
-void CSplineInterpreter::setNotAccessedAll(){
-    for(int32_t id=0;id<NR_ACCESSED_SPLN_INTR;++id){
-        this->accessed[id]=false;
+    else{
+        sprintf(f_response,"sintax error;;");
     }
 }

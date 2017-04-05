@@ -48,11 +48,9 @@ PROJECT := Nucleo_testtesttestrpirpi
 
 OBJECTS += MOVE/MOVE.o
 
-
 OBJECTS += BNO055/BNO055.o
 OBJECTS += SplineInterpreter/SplineInterpreter.o
 OBJECTS += src/MotionPlanner/MotionPlanner.o
-OBJECTS += src/MotionPlanner/MotionControl.o
 
 OBJECTS += SerialMonitor/SerialMonitor.o
 OBJECTS += MotionController/MotionController.o

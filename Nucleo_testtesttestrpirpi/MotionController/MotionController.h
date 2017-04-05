@@ -42,20 +42,20 @@ private:
         m_car.Steer(m_angle);
         m_car.Speed(m_speed);
         CIMU::CIMUData l_imuData = m_imu.getRawIMUData();        
-        m_serialPort.printf("@MCTL:%8.4f;%8.4f;%8.4f;%8.4f;%8.4f;%8.4f;%8.4f;%8.4f;%8.4f;%8.4f;%8.4f;%8.4f;;\r\n"
-            ,m_speed
-            ,m_angle
-            ,m_car.getVNH().GetCurrent()
-            ,l_imuData.ax
-            ,l_imuData.ay
-            ,l_imuData.az
-            ,l_imuData.mx
-            ,l_imuData.my
-            ,l_imuData.mz
-            ,l_imuData.gx
-            ,l_imuData.gy
-            ,l_imuData.gz
-            );
+        // m_serialPort.printf("@MCTL:%8.4f;%8.4f;%8.4f;%8.4f;%8.4f;%8.4f;%8.4f;%8.4f;%8.4f;%8.4f;%8.4f;%8.4f;;\r\n"
+        //     ,m_speed
+        //     ,m_angle
+        //     ,m_car.getVNH().GetCurrent()
+        //     ,l_imuData.ax
+        //     ,l_imuData.ay
+        //     ,l_imuData.az
+        //     ,l_imuData.mx
+        //     ,l_imuData.my
+        //     ,l_imuData.mz
+        //     ,l_imuData.gx
+        //     ,l_imuData.gy
+        //     ,l_imuData.gz
+        //     );
     }
     void serialCallback(char const * a, char * b)
     {
