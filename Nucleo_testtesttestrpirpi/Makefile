@@ -47,17 +47,16 @@ PROJECT := Nucleo_testtesttestrpirpi
 # Objects and Paths
 
 OBJECTS += MOVE/MOVE.o
-<<<<<<< HEAD
+
 
 OBJECTS += BNO055/BNO055.o
 OBJECTS += SplineInterpreter/SplineInterpreter.o
 OBJECTS += src/MotionPlanner/MotionPlanner.o
 OBJECTS += src/MotionPlanner/MotionControl.o
 
-=======
 OBJECTS += SerialMonitor/SerialMonitor.o
 OBJECTS += MotionController/MotionController.o
->>>>>>> refs/remotes/cristian-bara/master
+
 OBJECTS += Queue/Queue.o
 OBJECTS += SERVO/SERVO.o
 OBJECTS += VNH/VNH.o
