@@ -46,14 +46,14 @@ public:
     {
         m_ticker.detach();
     }
-    void mainCallback()
+    inline void mainCallback()
     {
         for(uint32_t i = 0; i < m_taskCount; i++)
         {
             m_taskList[i]->run();
         }
     }
-    void timerCallback()
+    inline void timerCallback()
     {
         for(uint32_t i = 0; i < m_taskCount; i++)
         {

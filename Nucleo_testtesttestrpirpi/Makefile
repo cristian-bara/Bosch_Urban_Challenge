@@ -47,18 +47,25 @@ PROJECT := Nucleo_testtesttestrpirpi
 # Objects and Paths
 
 OBJECTS += MOVE/MOVE.o
+<<<<<<< HEAD
 
 OBJECTS += BNO055/BNO055.o
 OBJECTS += SplineInterpreter/SplineInterpreter.o
 OBJECTS += src/MotionPlanner/MotionPlanner.o
 OBJECTS += src/MotionPlanner/MotionControl.o
 
+=======
+OBJECTS += SerialMonitor/SerialMonitor.o
+OBJECTS += MotionController/MotionController.o
+>>>>>>> refs/remotes/cristian-bara/master
 OBJECTS += Queue/Queue.o
 OBJECTS += SERVO/SERVO.o
 OBJECTS += VNH/VNH.o
 OBJECTS += LSM303D/LSM303D.o
 OBJECTS += L3GD20H/L3GD20H.o
-OBJECTS += CIMU/CIMU.o
+OBJECTS += IMU/IMU.o
+OBJECTS += Blinker/Blinker.o
+OBJECTS += Echoer/Echoer.o
 OBJECTS += main.o
 
  SYS_OBJECTS += mbed/TARGET_NUCLEO_F401RE/TOOLCHAIN_GCC_ARM/stm32f4xx_hal_flash_ramfunc.o
@@ -160,6 +167,10 @@ OBJECTS += main.o
 
 INCLUDE_PATHS += -I../
 INCLUDE_PATHS += -I../.
+INCLUDE_PATHS += -I../MotionController
+INCLUDE_PATHS += -I../SerialMonitor
+INCLUDE_PATHS += -I../Blinker
+INCLUDE_PATHS += -I../Echoer
 INCLUDE_PATHS += -I../LSM303D
 
 INCLUDE_PATHS += -I../BNO055
@@ -168,7 +179,7 @@ INCLUDE_PATHS += -I../src/BezierCurve
 INCLUDE_PATHS += -I../src/MotionPlanner
 
 INCLUDE_PATHS += -I../L3GD20H
-INCLUDE_PATHS += -I../CIMU
+INCLUDE_PATHS += -I../IMU
 INCLUDE_PATHS += -I../MOVE
 INCLUDE_PATHS += -I../Queue
 INCLUDE_PATHS += -I../SERVO
@@ -254,7 +265,7 @@ C_FLAGS += -DTARGET_STM32F401xE
 C_FLAGS += -include
 C_FLAGS += mbed_config.h
 
-CXX_FLAGS += -std=gnu++98
+CXX_FLAGS += -std=gnu++14
 CXX_FLAGS += -fno-rtti
 CXX_FLAGS += -Wvla
 CXX_FLAGS += -D__MBED__=1
