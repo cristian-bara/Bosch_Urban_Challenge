@@ -26,7 +26,6 @@ BezierCurve<T>::BezierCurve(std::complex<T> points[BEZIER_ORDER+1])
     this->bezierCurve=this->CP2PF();
     this->FOder_bezierCurve=this->bezierCurve.derivateFO();
     this->SOder_bezierCurve=this->FOder_bezierCurve.derivateFO();
-
 }
 
 template<class T>

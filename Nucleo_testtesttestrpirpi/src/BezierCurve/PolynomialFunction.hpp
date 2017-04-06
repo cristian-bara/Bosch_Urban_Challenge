@@ -75,7 +75,7 @@ T PolynomialFunction<T,N>::calculateValue(T input_value){
 
     T output_value=static_cast<T>(0);
     for(int32_t i=0;i<=N;++i){
-        output_value+=this->coefficients[i]*pow(input_value,i);
+        output_value+=this->coefficients[i]*static_cast<T>(pow(input_value,i));
     }
 //    std::cout<<"OOO"<<output_value<<std::endl;
     return output_value;

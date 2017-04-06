@@ -6,25 +6,22 @@
 #include <utility>
 #include <math.h>
 
-#define WHEELBASE 1.0
+#define WHEELBASE 0.265
 
-
-
-class CMotionPlanner
+class CBezierMotionPlanner
 {
     public:
-        CMotionPlanner(){
+        CBezierMotionPlanner(){
                 this->isInitialized=false;
         }
 
-        CMotionPlanner( std::complex<float>     a,
+        CBezierMotionPlanner( std::complex<float>     a,
                         std::complex<float>     b,
                         std::complex<float>     c,
                         std::complex<float>     d,
                         float                   motion_duration_i,
                         float                   timestep_i):bezierCurve(a,b,c,d),motion_duration(motion_duration_i),time_step(timestep_i)
         {
-                this->nrStep=static_cast<int32_t>(this->motion_duration/this->time_step);
                 this->bezierValueInput_step=1.0/(int)(this->motion_duration/this->time_step);
                 this->next_bezierValueInput=0.0;
                 this->isInitialized=true;
@@ -37,13 +34,15 @@ class CMotionPlanner
                                                 float                   motion_duration_i,
                                                 float                   timestep_i);
 
-        virtual ~CMotionPlanner();
+        virtual ~CBezierMotionPlanner();
         BezierCurve<float> getBezierCurve();
-//        <dl,dr> Velocity longitudinal and angular
+//      Velocity longitudinal and angular
         std::pair<float,float> getNextVelocity();
-        int32_t getNrStep();
-//        <dl,dr> Velocity longitudinal and angular, Input value [0,1]
+        
+//      Velocity longitudinal and angular, Input value [0,1]
         std::pair<float,float> getVelocity(float input_value);
+
+        bool hasValidValue(){return (next_bezierValueInput>=0 && next_bezierValueInput<=1);}
 
     protected:
 
@@ -54,7 +53,6 @@ class CMotionPlanner
 
         float bezierValueInput_step;
         float next_bezierValueInput;
-        int32_t nrStep;
         bool isInitialized;
 
 };

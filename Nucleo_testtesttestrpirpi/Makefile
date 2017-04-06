@@ -48,9 +48,8 @@ PROJECT := Nucleo_testtesttestrpirpi
 
 OBJECTS += MOVE/MOVE.o
 
-OBJECTS += BNO055/BNO055.o
 OBJECTS += SplineInterpreter/SplineInterpreter.o
-OBJECTS += src/MotionPlanner/MotionPlanner.o
+OBJECTS += src/BezierMotionPlanner/BezierMotionPlanner.o
 
 OBJECTS += SerialMonitor/SerialMonitor.o
 OBJECTS += MotionController/MotionController.o
@@ -170,10 +169,10 @@ INCLUDE_PATHS += -I../Blinker
 INCLUDE_PATHS += -I../Echoer
 INCLUDE_PATHS += -I../LSM303D
 
-INCLUDE_PATHS += -I../BNO055
+
 INCLUDE_PATHS += -I../SplineInterpreter
 INCLUDE_PATHS += -I../src/BezierCurve
-INCLUDE_PATHS += -I../src/MotionPlanner
+INCLUDE_PATHS += -I../src/BezierMotionPlanner
 
 INCLUDE_PATHS += -I../L3GD20H
 INCLUDE_PATHS += -I../IMU
