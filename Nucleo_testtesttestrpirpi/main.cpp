@@ -15,6 +15,7 @@
 #include <array>
 #include <SerialMonitor.h>
 #include <MotionController.h>
+#include <linalg.h>
 
 
 Serial          g_rpi(USBTX, USBRX); 
