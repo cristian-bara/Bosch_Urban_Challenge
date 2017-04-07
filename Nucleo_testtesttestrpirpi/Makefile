@@ -47,10 +47,14 @@ PROJECT := Nucleo_testtesttestrpirpi
 # Objects and Paths
 
 OBJECTS += MOVE/MOVE.o
+<<<<<<< HEAD
 
 OBJECTS += SplineInterpreter/SplineInterpreter.o
 OBJECTS += src/BezierMotionPlanner/BezierMotionPlanner.o
 
+=======
+OBJECTS += linalg/linalg.o
+>>>>>>> refs/remotes/cristian-bara/master
 OBJECTS += SerialMonitor/SerialMonitor.o
 OBJECTS += MotionController/MotionController.o
 
@@ -163,6 +167,7 @@ OBJECTS += main.o
 
 INCLUDE_PATHS += -I../
 INCLUDE_PATHS += -I../.
+INCLUDE_PATHS += -I../linalg
 INCLUDE_PATHS += -I../MotionController
 INCLUDE_PATHS += -I../SerialMonitor
 INCLUDE_PATHS += -I../Blinker
