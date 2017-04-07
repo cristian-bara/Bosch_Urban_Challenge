@@ -72,6 +72,20 @@ uint32_t loop()
 
 int main() 
 {
+
+    linalg::CMatrix<double,3,3> l_mat33;
+
+    l_mat33 = l_mat33 * l_mat33;
+
+    l_mat33 *= l_mat33;
+
+    linalg::CLUDecomposition<double,3> l_LU = linalg::CLUDecomposition<double,3>(l_mat33);
+
+    l_mat33 = l_LU;
+
+
+
+
     uint32_t  l_errorLevel = setup();  
     while(!l_errorLevel) 
     {

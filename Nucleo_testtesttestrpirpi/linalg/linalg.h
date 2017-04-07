@@ -32,6 +32,29 @@ namespace linalg
         CMatrix(const CContainerType& f_data) : m_data(f_data) {}
         CMatrix(const CContainerType&& f_data) : m_data(f_data) {}
 
+        CThisType& operator=(const CThisType& f_matrix)
+        {
+            for (uint32_t l_row = 0; l_row < M; ++l_row)
+            {
+                for (uint32_t l_col = 0; l_col < N; ++l_col)
+                {
+                    this->m_data[l_row][l_col] = f_matrix.m_data[l_row][l_col];
+                }
+            }
+            return *this;
+        }
+        CThisType& operator=(const CThisType&& f_matrix)
+        {
+            for (uint32_t l_row = 0; l_row < M; ++l_row)
+            {
+                for (uint32_t l_col = 0; l_col < N; ++l_col)
+                {
+                    this->m_data[l_row][l_col] = f_matrix.m_data[l_row][l_col];
+                }
+            }
+            return *this;
+        }
+
         std::array<T,N>& operator[](uint32_t f_row)
         {
             return m_data[f_row];
@@ -169,6 +192,12 @@ namespace linalg
             }
             return *this;
         }
+        CThisType& operator*=(const CThisType& f_val) 
+        {
+            CThisType& l_thisRef(*this);
+            l_thisRef = l_thisRef * f_val;
+            return l_thisRef;
+        }
         CThisType& operator/=(const CDataType& f_val) 
         {
             for (uint32_t l_row = 0; l_row < M; ++l_row)
@@ -193,7 +222,7 @@ namespace linalg
             return l_matrix;
         }
         template <uint32_t P>
-        CLeftMultiplicationResultType<P> operator*(CLeftMultipliableType<P>& f_matrix)
+        CRightMultiplicationResultType<P> operator*(const CRightMultiplicationResultType<P>& f_matrix)
         {
             CLeftMultiplicationResultType<P> l_matrix;
             for (uint32_t l_row = 0; l_row < M; ++l_row)
@@ -245,8 +274,16 @@ namespace linalg
 
         CLUDecomposition(const CThisType& f_decomposition) : m_LU(f_decomposition.m_LU) {}
         CLUDecomposition(const CThisType&& f_decomposition) : m_LU(f_decomposition.m_LU) {}
-        CLUDecomposition(const COriginalType& f_matrix) : m_LU() {docopmpose(f_matrix);}
-        CLUDecomposition(const COriginalType&& f_matrix) : m_LU() {docopmpose(f_matrix);}
+        CLUDecomposition(const COriginalType& f_matrix) : m_LU() {decompose(f_matrix);}
+        CLUDecomposition(const COriginalType&& f_matrix) : m_LU() {decompose(f_matrix);}
+
+        operator COriginalType()
+        {
+            COriginalType l_result;
+
+            return l_result;
+        }
+
         COriginalType invert()
         {
             return triUInv() * triLInv();
@@ -303,7 +340,17 @@ namespace linalg
 
         }
         CMatrix<T,N,N> m_LU;
+        std::array<uint32_t,N> m_P;
     };
+
+    template <class T, uint32_t N>
+    using CColVector = CMatrix<T,N,1>;
+
+    template <class T, uint32_t N>
+    using CVector = CColVector<T,N>;
+
+    template <class T, uint32_t N>
+    using CRowVector = CMatrix<T,1,N>;
 };
 
 #endif // LINALG_H 
