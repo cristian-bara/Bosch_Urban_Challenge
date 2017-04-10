@@ -16,11 +16,12 @@
 #include <array>
 #include <SerialMonitor.h>
 #include <MotionController.h>
-<<<<<<< HEAD
+
 #include <SplineInterpreter.h>
-=======
+
 #include <linalg.h>
->>>>>>> refs/remotes/cristian-bara/master
+#include <JacobianMatrix.h>
+
 
 
 Serial          g_rpi(USBTX, USBRX); 
@@ -80,20 +81,6 @@ uint32_t loop()
 
 int main() 
 {
-
-    linalg::CMatrix<double,3,3> l_mat33;
-
-    l_mat33 = l_mat33 * l_mat33;
-
-    l_mat33 *= l_mat33;
-
-    linalg::CLUDecomposition<double,3> l_LU = linalg::CLUDecomposition<double,3>(l_mat33);
-
-    l_mat33 = l_LU;
-
-
-
-
     uint32_t  l_errorLevel = setup();  
     while(!l_errorLevel) 
     {
