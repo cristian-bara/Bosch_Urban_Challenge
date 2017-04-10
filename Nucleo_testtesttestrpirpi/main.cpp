@@ -40,9 +40,9 @@ CSerialMonitor g_serialMonitor(g_rpi, g_serialMonitorSubscribers);
 CTask* g_taskList[] = {
     &g_blinker,
 
-    &g_imu,
-    &g_motionController,
-    &g_serialMonitor,
+    // &g_imu,
+    // &g_motionController,
+    // &g_serialMonitor,
 
     &g_echoer
     };
@@ -59,6 +59,115 @@ uint32_t setup()
     g_rpi.printf("#               #\r\n");
     g_rpi.printf("#################\r\n");
     g_rpi.printf("\r\n");
+    
+
+
+
+    linalg::CMatrix<double,3,3> l_mat33({
+           {{0.8147,    0.9134,    0.2785},
+            {0.9058,    0.6324,    0.5469},
+            {0.1270,    0.0975,    0.9575}}
+        });
+
+    g_rpi.printf("\r\n");
+    for (uint8_t i = 0; i < 3; i++)
+    {
+        for (uint8_t j = 0; j < 3; j++)
+        {
+            g_rpi.printf("%f ",l_mat33[i][j]);
+        }
+        g_rpi.printf("\r\n");
+    }
+
+    l_mat33 = l_mat33 * l_mat33;
+
+    g_rpi.printf("\r\n");
+    for (uint8_t i = 0; i < 3; i++)
+    {
+        for (uint8_t j = 0; j < 3; j++)
+        {
+            g_rpi.printf("%f ",l_mat33[i][j]);
+        }
+        g_rpi.printf("\r\n");
+    }
+
+    l_mat33 *= l_mat33;
+
+    g_rpi.printf("\r\n");
+    for (uint8_t i = 0; i < 3; i++)
+    {
+        for (uint8_t j = 0; j < 3; j++)
+        {
+            g_rpi.printf("%f ",l_mat33[i][j]);
+        }
+        g_rpi.printf("\r\n");
+    }
+
+    linalg::CLUDecomposition<double,3> l_LU = linalg::CLUDecomposition<double,3>(l_mat33);
+
+    g_rpi.printf("\r\n");
+    for (uint8_t i = 0; i < 3; i++)
+    {
+        for (uint8_t j = 0; j < 3; j++)
+        {
+            g_rpi.printf("%f ",l_LU.m_L[i][j]);
+        }
+        g_rpi.printf("\r\n");
+    }
+
+    g_rpi.printf("\r\n");
+    for (uint8_t i = 0; i < 3; i++)
+    {
+        for (uint8_t j = 0; j < 3; j++)
+        {
+            g_rpi.printf("%f ",l_LU.m_U[i][j]);
+        }
+        g_rpi.printf("\r\n");
+    }
+
+    g_rpi.printf("\r\n");
+    for (uint8_t i = 0; i < 3; i++)
+    {
+        g_rpi.printf("%f\r\n",l_LU.m_P[i]);
+    }
+
+    l_mat33 = l_LU;
+
+    g_rpi.printf("\r\n");
+    for (uint8_t i = 0; i < 3; i++)
+    {
+        for (uint8_t j = 0; j < 3; j++)
+        {
+            g_rpi.printf("%f ",l_mat33[i][j]);
+        }
+        g_rpi.printf("\r\n");
+    }
+
+    l_mat33 = l_mat33.inv();
+
+    g_rpi.printf("\r\n");
+    for (uint8_t i = 0; i < 3; i++)
+    {
+        for (uint8_t j = 0; j < 3; j++)
+        {
+            g_rpi.printf("%f ",l_mat33[i][j]);
+        }
+        g_rpi.printf("\r\n");
+    }
+
+    // l_mat33 *= l_mat33.inv();
+
+    // g_rpi.printf("\r\n");
+    // for (uint8_t i = 0; i < 3; i++)
+    // {
+    //     for (uint8_t j = 0; j < 3; j++)
+    //     {
+    //         g_rpi.printf("%f ",l_mat33[i][j]);
+    //     }
+    //     g_rpi.printf("\r\n");
+    // }
+
+
 
     timer_100us.start();  
     return 0;    
@@ -72,20 +181,6 @@ uint32_t loop()
 
 int main() 
 {
-
-    linalg::CMatrix<double,3,3> l_mat33;
-
-    l_mat33 = l_mat33 * l_mat33;
-
-    l_mat33 *= l_mat33;
-
-    linalg::CLUDecomposition<double,3> l_LU = linalg::CLUDecomposition<double,3>(l_mat33);
-
-    l_mat33 = l_LU;
-
-
-
-
     uint32_t  l_errorLevel = setup();  
     while(!l_errorLevel) 
     {

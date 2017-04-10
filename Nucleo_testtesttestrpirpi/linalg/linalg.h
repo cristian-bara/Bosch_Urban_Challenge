@@ -224,7 +224,7 @@ namespace linalg
         template <uint32_t P>
         CRightMultiplicationResultType<P> operator*(const CRightMultiplicationResultType<P>& f_matrix)
         {
-            CLeftMultiplicationResultType<P> l_matrix;
+            CRightMultiplicationResultType<P> l_matrix;
             for (uint32_t l_row = 0; l_row < M; ++l_row)
             {
                 for (uint32_t l_col = 0; l_col < N; ++l_col)
@@ -238,10 +238,7 @@ namespace linalg
             }
             return l_matrix;
         }
-        CThisType invert()
-        {
-            return CLUDecomposition(*this).invert();
-        }
+        CThisType inv();
 
         template <uint32_t P>
         CRightMultiplicationResultType<P> solve(const CRightMultipliableType<P>& f_B)
@@ -259,6 +256,7 @@ namespace linalg
     public:
         using CThisType = CLUDecomposition<T,N>;
         using COriginalType = CMatrix<T,N,N>;
+        using CDataType =T;
 
         template <uint32_t P>
         using CLeftMultipliableType = CMatrix<T,P,N>;
@@ -272,74 +270,140 @@ namespace linalg
         template <uint32_t P>
         using CRightMultiplicationResultType = CMatrix<T,N,P>;
 
-        CLUDecomposition(const CThisType& f_decomposition) : m_LU(f_decomposition.m_LU) {}
-        CLUDecomposition(const CThisType&& f_decomposition) : m_LU(f_decomposition.m_LU) {}
-        CLUDecomposition(const COriginalType& f_matrix) : m_LU() {decompose(f_matrix);}
-        CLUDecomposition(const COriginalType&& f_matrix) : m_LU() {decompose(f_matrix);}
+        CLUDecomposition(const CThisType& f_decomposition) : m_L(f_decomposition.m_L), m_U(f_decomposition.m_U), m_P(f_decomposition.m_P) {}
+        CLUDecomposition(const CThisType&& f_decomposition) : m_L(f_decomposition.m_L), m_U(f_decomposition.m_U), m_P(f_decomposition.m_P) {}
+        CLUDecomposition(const COriginalType& f_matrix) : m_L(), m_U(), m_P() {decompose(f_matrix);}
+        CLUDecomposition(const COriginalType&& f_matrix) : m_L(), m_U(), m_P() {decompose(f_matrix);}
 
         operator COriginalType()
         {
-            COriginalType l_result;
-
-            return l_result;
+            return m_L * m_U;
         }
 
-        COriginalType invert()
+        COriginalType inv()
         {
-            return triUInv() * triLInv();
+            COriginalType l_LInv(triLInv());
+            COriginalType l_UInv(triUInv()); 
+            return l_UInv * l_LInv;
+            // return m_L * m_U;
         }
-        COriginalType triUInv()
+
+        COriginalType& triUInv()
         {
-            COriginalType l_invU;
-            return l_invU;
+            COriginalType l_invU(m_U);
+
+            for (uint32_t l_jdx = (N-1); l_jdx >= 0; --l_jdx)
+            {
+                l_invU[l_jdx][l_jdx] = 1/l_invU[l_jdx][l_jdx];
+
+                for (uint32_t l_idx = (l_jdx-1); l_idx >= 0; --l_idx)
+                {
+                    l_invU[l_idx][l_jdx] = 0;
+
+                    for (uint32_t l_kdx = (l_idx+1); l_kdx < (l_jdx+1); ++l_kdx)
+                    {
+                        l_invU[l_idx][l_jdx] -= l_invU[l_idx][l_kdx]*l_invU[l_kdx][l_jdx];
+                    }
+
+                    l_invU[l_idx][l_jdx] /= l_invU[l_jdx][l_jdx];
+                }
+            }
+
+            // return l_invU;
+            return m_U;
         }
-        COriginalType triLInv()
+        COriginalType& triLInv()
         {
-            COriginalType l_invL;
-            return l_invL;
+            COriginalType l_invL(m_L);
+
+            for (uint32_t l_idx = 0; l_idx < N; ++l_idx)
+            {
+                for (uint32_t l_jdx = l_idx+1; l_jdx < N; ++l_jdx)
+                {
+                    l_invL[l_idx][l_jdx] = 0;
+
+                    for (uint32_t l_kdx = l_idx+1; l_kdx < N; ++l_kdx)
+                    {
+                        l_invL[l_idx][l_jdx] -= l_invL[l_idx][l_kdx]*l_invL[l_kdx][l_jdx];
+                    }
+
+                    l_invL[l_idx][l_jdx] /= l_invL[l_jdx][l_jdx];
+                }
+            }
+
+            // return l_invL;
+            return m_L;
         }
 
         template <uint32_t P>
         CRightMultiplicationResultType<P> solve(const CRightMultipliableType<P>& f_B)
         {
-            return sTriL(sTriU(f_B));
+            CRightMultipliableType<P> l_B;
+
+            for (uint32_t l_idx = 0; l_idx < N; ++l_idx)
+            {
+                for (uint32_t l_jdx = 0; l_jdx < P; ++l_jdx)
+                {
+                    l_B[l_idx][l_jdx] = f_B[m_P[l_idx]][l_jdx];
+                }
+            }
+
+            return sTriL(sTriU(l_B));
         }
 
         template <uint32_t P>
         CRightMultiplicationResultType<P> sTriU(const CRightMultipliableType<P>& f_B)
         {
-            CRightMultiplicationResultType<P> l_U;
-
-            return l_U;
+            return triUInv()*f_B;
         }
 
         template <uint32_t P>
         CRightMultiplicationResultType<P> sTriL(const CRightMultipliableType<P>& f_B)
         {
-            CRightMultiplicationResultType<P> l_L;
+            return triLInv()*f_B;
+        }
 
-            for(uint32_t l_idx = 0; l_idx < P; ++l_idx)
+
+    // private:
+        void decompose(const CMatrix<T,N,N>& f_matrix)
+        {
+            m_U = f_matrix;
+            for (uint32_t l_kdx = 0; l_kdx < (N-1); ++l_kdx)
             {
-                for(uint32_t l_jdx = 0; l_jdx < N; ++l_jdx)
+                m_L[l_kdx][l_kdx] = 1;
+                m_P[l_kdx] = l_kdx;
+                // for(uint32_t l_idx = l_kdx+1; l_idx < N; ++l_idx)
+                // {
+                //     if (m_U[l_idx][l_kdx] > m_U[m_P[l_kdx]][l_kdx])
+                //     {
+                //         m_P[l_kdx] = l_idx;
+                //     }
+                // }
+
+                // if (l_kdx != m_P[l_kdx])
+                // {
+                //     for(uint32_t l_jdx = l_kdx; l_jdx < N; ++l_jdx)
+                //     {   
+                //         CDataType l_aux = m_U[l_kdx][l_jdx];
+                //         m_U[l_kdx][l_jdx] = m_U[m_P[l_kdx]][l_jdx];
+                //         m_U[m_P[l_kdx]][l_jdx] = l_aux;
+                //     }
+                // }
+
+                for(uint32_t l_idx = l_kdx+1; l_idx < N; ++l_idx)
                 {
-                    l_L[l_idx][l_jdx] = f_B[l_idx][l_jdx];
-                    for(uint32_t l_kdx = 0; l_kdx < (l_jdx-1); ++l_kdx)
+                    m_L[l_idx][l_kdx] = m_U[l_idx][l_kdx]/m_U[l_kdx][l_kdx];
+                    m_U[l_idx][l_kdx] = 0;
+                    for(uint32_t l_jdx = l_kdx+1; l_jdx < N; ++l_jdx)
                     {
-                        // l_L[l_idx][l_jdx] -= L(l_jdx,l_kdx)
+                        m_U[l_idx][l_jdx] = m_U[l_idx][l_jdx] - m_L[l_idx][l_kdx]*m_U[l_kdx][l_jdx];
                     }
                 }
             }
-
-            return l_L;
+            m_L[N-1][N-1] = 1;
         }
-
-
-    private:
-        void decompose(CMatrix<T,N,N> f_matrix)
-        {
-
-        }
-        CMatrix<T,N,N> m_LU;
+        CMatrix<T,N,N> m_L;
+        CMatrix<T,N,N> m_U;
         std::array<uint32_t,N> m_P;
     };
 
@@ -352,5 +416,7 @@ namespace linalg
     template <class T, uint32_t N>
     using CRowVector = CMatrix<T,1,N>;
 };
+
+#include <linalg.inl>
 
 #endif // LINALG_H 
