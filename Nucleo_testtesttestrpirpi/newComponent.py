@@ -11,7 +11,7 @@ if not os.path.exists(compName):
     file.writelines("#ifndef " + compName.upper() + "_H\n")
     file.writelines("#define " + compName.upper() + "_H\n")
     file.writelines("#include <" + compName +".inl>\n")
-    file.writelines("#endif \\\\ " + compName.upper() + "_H\n")
+    file.writelines("#endif // " + compName.upper() + "_H\n")
     file.close()
     file = open(compName + "\\" + compName + ".inl", 'w')
     file.writelines("\n")
