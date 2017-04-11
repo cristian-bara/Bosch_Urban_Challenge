@@ -1,8 +1,8 @@
 #ifndef JACOBIAN_MATRIX_H
 #define JACOBIAN_MATRIX_H
 
-#include <linalg.h>
-#include <CarSystem.h>
+#include "<linalg.h>"
+#include "<VehicleModel.h>"
 #include <array>
 #include <math.h>
 
@@ -63,17 +63,16 @@ class CJacobianCalculator{
             return this->m_JacobianOutputMatrix;
         }
     
-        linalg::CMatrix<float,10,12> getJacobianStateMatrix(TState f_state,TInput f_input){
+        linalg::CMatrix<float,10,12> getJacobianStateMatrix(CVehicleDynamicsModel::TState f_state,CVehicleDynamicsModel::TInput f_input){
             std::array<std::array<float,12>,10> l_data;
             setZero<float,12,10>(l_data);
             setJacobianStateMatrixWithOne(l_data);
             //Setting values in the jacobian matrix
-            float l_teta_rad=f_state.teta*DEG2RAD;
-            l_data[2][6]=m_gamma*f_state.omega*cos(l_teta_rad);
-            l_data[2][8]=m_gamma*sin(l_teta_rad);
+            l_data[2][6]=m_gamma*f_state.omega*cos(f_state.teta_rad);
+            l_data[2][8]=m_gamma*sin(f_state.teta_rad);
 
-            l_data[3][6]=-m_gamma*f_state.omega*sin(l_teta_rad);
-            l_data[3][8]=m_gamma*cos(l_teta_rad);
+            l_data[3][6]=-m_gamma*f_state.omega*sin(f_state.teta_rad);
+            l_data[3][8]=m_gamma*cos(f_state.teta_rad);
 
             float l_alpha_rad=f_input.alpha*DEG2RAD;
             l_data[7][8]=l_data[6][8]=m_dt*m_gamma/m_wb*tan(l_alpha_rad);

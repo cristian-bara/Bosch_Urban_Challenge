@@ -20,7 +20,7 @@
 #include <SplineInterpreter.h>
 
 #include <linalg.h>
-#include <JacobianMatrix.h>
+#include <VehicleModel.h>
 
 
 
