@@ -282,57 +282,55 @@ namespace linalg
 
         COriginalType inv()
         {
-            COriginalType l_LInv(triLInv());
-            COriginalType l_UInv(triUInv()); 
-            return l_UInv * l_LInv;
-            // return m_L * m_U;
+            return triUInv() * triLInv();
         }
 
-        COriginalType& triUInv()
-        {
-            COriginalType l_invU(m_U);
-
-            for (uint32_t l_jdx = (N-1); l_jdx >= 0; --l_jdx)
-            {
-                l_invU[l_jdx][l_jdx] = 1/l_invU[l_jdx][l_jdx];
-
-                for (uint32_t l_idx = (l_jdx-1); l_idx >= 0; --l_idx)
-                {
-                    l_invU[l_idx][l_jdx] = 0;
-
-                    for (uint32_t l_kdx = (l_idx+1); l_kdx < (l_jdx+1); ++l_kdx)
-                    {
-                        l_invU[l_idx][l_jdx] -= l_invU[l_idx][l_kdx]*l_invU[l_kdx][l_jdx];
-                    }
-
-                    l_invU[l_idx][l_jdx] /= l_invU[l_jdx][l_jdx];
-                }
-            }
-
-            // return l_invU;
-            return m_U;
-        }
-        COriginalType& triLInv()
+        COriginalType triLInv()
         {
             COriginalType l_invL(m_L);
 
-            for (uint32_t l_idx = 0; l_idx < N; ++l_idx)
+            for (uint32_t l_jdx = 0; l_jdx < N; ++l_jdx)
             {
-                for (uint32_t l_jdx = l_idx+1; l_jdx < N; ++l_jdx)
+                l_invL[l_jdx][l_jdx] = 1/l_invL[l_jdx][l_jdx];
+
+                for (uint32_t l_idx = l_jdx+1; l_idx < N; ++l_idx)
                 {
                     l_invL[l_idx][l_jdx] = 0;
 
-                    for (uint32_t l_kdx = l_idx+1; l_kdx < N; ++l_kdx)
+                    for (uint32_t l_kdx = l_jdx; l_kdx < l_idx; ++l_kdx)
                     {
-                        l_invL[l_idx][l_jdx] -= l_invL[l_idx][l_kdx]*l_invL[l_kdx][l_jdx];
+                        l_invL[l_idx][l_jdx] -= m_L[l_idx][l_kdx]*l_invL[l_kdx][l_jdx];
                     }
 
-                    l_invL[l_idx][l_jdx] /= l_invL[l_jdx][l_jdx];
+                    l_invL[l_idx][l_jdx] /= l_invL[l_idx][l_idx];
                 }
             }
 
-            // return l_invL;
-            return m_L;
+            return l_invL;
+        }
+
+        COriginalType triUInv()
+        {
+            COriginalType l_invU(m_U);
+
+            for (int32_t l_jdx = (N-1); l_jdx >= 0; --l_jdx)
+            {
+                l_invU[l_jdx][l_jdx] = 1/l_invU[l_jdx][l_jdx];
+
+                for (int32_t l_idx = (l_jdx-1); l_idx >= 0; --l_idx)
+                {
+                    l_invU[l_idx][l_jdx] = 0;
+
+                    for (int32_t l_kdx = (l_idx+1); l_kdx < (l_jdx+1); ++l_kdx)
+                    {
+                        l_invU[l_idx][l_jdx] -= m_U[l_idx][l_kdx]*l_invU[l_kdx][l_jdx];
+                    }
+
+                    l_invU[l_idx][l_jdx] /= l_invU[l_idx][l_idx];
+                }
+            }
+
+            return l_invU;
         }
 
         template <uint32_t P>
@@ -401,6 +399,7 @@ namespace linalg
                 }
             }
             m_L[N-1][N-1] = 1;
+            m_P[N-1] = N-1;
         }
         CMatrix<T,N,N> m_L;
         CMatrix<T,N,N> m_U;
