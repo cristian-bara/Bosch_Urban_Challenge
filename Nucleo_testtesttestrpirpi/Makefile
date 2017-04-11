@@ -48,6 +48,7 @@ PROJECT := Nucleo_testtesttestrpirpi
 
 OBJECTS += MOVE/MOVE.o
 OBJECTS += linalg/linalg.o
+OBJECTS += filter/filter.o
 OBJECTS += SerialMonitor/SerialMonitor.o
 OBJECTS += MotionController/MotionController.o
 OBJECTS += Queue/Queue.o
@@ -160,6 +161,7 @@ OBJECTS += main.o
 INCLUDE_PATHS += -I../
 INCLUDE_PATHS += -I../.
 INCLUDE_PATHS += -I../linalg
+INCLUDE_PATHS += -I../filter
 INCLUDE_PATHS += -I../MotionController
 INCLUDE_PATHS += -I../SerialMonitor
 INCLUDE_PATHS += -I../Blinker
