@@ -69,11 +69,17 @@ namespace linalg
         {
             return m_data[f_row];
         }
-
+ 
         const CDataType& operator()(uint32_t f_row, uint32_t f_col) const
         {
             return m_data[f_row][f_col];
         }
+
+        // template<>
+        // CMatrix<T,1,1>::operator CDataType()
+        // {
+        //     return m_data[0][0];
+        // }
 
         CThisType& operator+() {return *this;}
         CThisType operator-() 
@@ -246,7 +252,50 @@ namespace linalg
             return CLUDecomposition(*this).solve();
         }
 
-    private:
+        static CThisType zeros()
+        {
+            CThisType l_res;
+
+            for (uint32_t l_row = 0; l_row < M; ++l_row)
+            {
+                for (uint32_t l_col = 0; l_col < N; ++l_col)
+                {
+                    l_res[l_row][l_col] = 0;
+                }
+            }
+
+            return l_res;
+        }
+
+        static CThisType ones()
+        {
+            CThisType l_res;
+
+            for (uint32_t l_row = 0; l_row < M; ++l_row)
+            {
+                for (uint32_t l_col = 0; l_col < N; ++l_col)
+                {
+                    l_res[l_row][l_col] = 1;
+                }
+            }
+
+            return l_res;
+        }
+
+        static CThisType eye()
+        {
+            CThisType l_res(CThisType::zeros());
+            uint32_t l_minDim = std::min(M,N);
+
+            for (uint32_t l_row = 0; l_row < l_minDim; ++l_row)
+            {
+                l_res[l_row][l_row] = 1;
+            }
+
+            return l_res;
+        }
+
+    protected:
         std::array<std::array<T,N>,M> m_data;
     };
 
@@ -370,23 +419,6 @@ namespace linalg
             {
                 m_L[l_kdx][l_kdx] = 1;
                 m_P[l_kdx] = l_kdx;
-                // for(uint32_t l_idx = l_kdx+1; l_idx < N; ++l_idx)
-                // {
-                //     if (m_U[l_idx][l_kdx] > m_U[m_P[l_kdx]][l_kdx])
-                //     {
-                //         m_P[l_kdx] = l_idx;
-                //     }
-                // }
-
-                // if (l_kdx != m_P[l_kdx])
-                // {
-                //     for(uint32_t l_jdx = l_kdx; l_jdx < N; ++l_jdx)
-                //     {   
-                //         CDataType l_aux = m_U[l_kdx][l_jdx];
-                //         m_U[l_kdx][l_jdx] = m_U[m_P[l_kdx]][l_jdx];
-                //         m_U[m_P[l_kdx]][l_jdx] = l_aux;
-                //     }
-                // }
 
                 for(uint32_t l_idx = l_kdx+1; l_idx < N; ++l_idx)
                 {
