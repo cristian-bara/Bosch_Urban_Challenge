@@ -107,8 +107,8 @@ namespace filter
         {
             class CEKF
             {
-                
-            }
+
+            };
         };
     };
 };
