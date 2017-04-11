@@ -47,10 +47,14 @@ PROJECT := Nucleo_testtesttestrpirpi
 # Objects and Paths
 
 OBJECTS += MOVE/MOVE.o
+
+OBJECTS += SplineInterpreter/SplineInterpreter.o
+OBJECTS += src/BezierMotionPlanner/BezierMotionPlanner.o
 OBJECTS += linalg/linalg.o
 OBJECTS += filter/filter.o
 OBJECTS += SerialMonitor/SerialMonitor.o
 OBJECTS += MotionController/MotionController.o
+
 OBJECTS += Queue/Queue.o
 OBJECTS += SERVO/SERVO.o
 OBJECTS += VNH/VNH.o
@@ -167,6 +171,10 @@ INCLUDE_PATHS += -I../SerialMonitor
 INCLUDE_PATHS += -I../Blinker
 INCLUDE_PATHS += -I../Echoer
 INCLUDE_PATHS += -I../LSM303D
+INCLUDE_PATHS += -I../SplineInterpreter
+INCLUDE_PATHS += -I../src/BezierCurve
+INCLUDE_PATHS += -I../src/BezierMotionPlanner
+INCLUDE_PATHS += -I../src/System
 INCLUDE_PATHS += -I../L3GD20H
 INCLUDE_PATHS += -I../IMU
 INCLUDE_PATHS += -I../MOVE
@@ -187,6 +195,7 @@ INCLUDE_PATHS += -I../mbed/TARGET_NUCLEO_F401RE/TOOLCHAIN_GCC_ARM
 INCLUDE_PATHS += -I../mbed/drivers
 INCLUDE_PATHS += -I../mbed/hal
 INCLUDE_PATHS += -I../mbed/platform
+
 
 LIBRARY_PATHS := -L../mbed/TARGET_NUCLEO_F401RE/TOOLCHAIN_GCC_ARM 
 LIBRARIES := -l:libmbed.a 

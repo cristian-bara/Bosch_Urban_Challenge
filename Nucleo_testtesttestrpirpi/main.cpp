@@ -1,3 +1,4 @@
+
 #include <mbed.h>
 #include <Queue.h>
 #include <Timer/Timer.h>
@@ -15,7 +16,12 @@
 #include <array>
 #include <SerialMonitor.h>
 #include <MotionController.h>
+
+#include <SplineInterpreter.h>
+
 #include <linalg.h>
+#include <VehicleModel.h>
+
 
 
 Serial          g_rpi(USBTX, USBRX); 
@@ -28,11 +34,14 @@ const float g_baseTick = 0.0001; // seconds
 CBlinker        g_blinker       (0.5    / g_baseTick, LED1);
 CEchoer         g_echoer        (10     / g_baseTick, g_rpi);
 CIMU            g_imu           (0.01   / g_baseTick, g_accelerometerMagnetometer, g_gyroscope);
-CMotionController g_motionController(0.01 / g_baseTick, g_rpi, g_imu, g_car);
+CSplineInterpreter      g_splineInterpreter;
+CMotionController       g_motionController(0.01 / g_baseTick, g_rpi, g_imu, g_car,g_splineInterpreter,0.01);
+
 
 CSerialMonitor::CSerialSubscriberMap g_serialMonitorSubscribers = {
     {"MCTL",mbed::callback(CMotionController::staticSerialCallback,&g_motionController)},
-    {"ASDF",[](char const *a, char *b){strcpy(b,a);}}
+    {"ASDF",[](char const *a, char *b){strcpy(b,a);}},
+    {"SPLN",mbed::callback(CSplineInterpreter::staticSerialCallback,&g_splineInterpreter)}
 };
 
 CSerialMonitor g_serialMonitor(g_rpi, g_serialMonitorSubscribers);
