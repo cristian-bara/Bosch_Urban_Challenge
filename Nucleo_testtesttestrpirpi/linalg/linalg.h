@@ -11,6 +11,7 @@ namespace linalg
     {
     public:
         using CThisType = CMatrix<T,M,N>;
+        using CTransposeType = CMatrix<T,N,M>;
         using CContainerType = std::array<std::array<T,N>,M>;
         using CDataType =T;
 
@@ -245,6 +246,21 @@ namespace linalg
             return l_matrix;
         }
         CThisType inv();
+
+        CTransposeType transpose()
+        {
+            CTransposeType l_trsp;
+
+            for (uint32_t l_row = 0; l_row < M; ++l_row)
+            {
+                for (uint32_t l_col = 0; l_col < N; ++l_col)
+                {
+                    l_trsp.m_data[l_col][l_row] = this->m_data[l_row][l_col];
+                }
+            }
+
+            return l_trsp;
+        }
 
         template <uint32_t P>
         CRightMultiplicationResultType<P> solve(const CRightMultipliableType<P>& f_B)
