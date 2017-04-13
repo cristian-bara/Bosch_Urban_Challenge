@@ -229,7 +229,7 @@ namespace linalg
             return l_matrix;
         }
         template <uint32_t P>
-        CRightMultiplicationResultType<P> operator*(const CRightMultiplicationResultType<P>& f_matrix)
+        CRightMultiplicationResultType<P> operator*(const CRightMultipliableType<P>& f_matrix)
         {
             CRightMultiplicationResultType<P> l_matrix;
             for (uint32_t l_row = 0; l_row < M; ++l_row)
@@ -239,7 +239,7 @@ namespace linalg
                     l_matrix.m_data[l_row][l_col] = 0;
                     for (uint32_t l_idx = 0; l_idx < P; ++l_idx)
                     {
-                        l_matrix.m_data[l_row][l_col] += this->m_data[l_row][l_idx] * f_matrix.m_data[l_idx][l_col];
+                        l_matrix[l_row][l_col] += this->m_data[l_row][l_idx] * f_matrix[l_idx][l_col];
                     }
                 }
             }
