@@ -97,6 +97,91 @@ namespace filter
             template <class T, uint32_t NA, uint32_t NB, uint32_t NC>
             class CSSModel
             {
+            public:
+
+                using CStateType = linalg::CColVector<T,NA>;
+                using CStateTransitionType = linalg::CMatrix<T,NA,NA>;
+                using CInputType = linalg::CColVector<T,NB>;
+                using CMeasurementType = linalg::CColVector<T,NC>;
+                using CInputMatrixType = linalg::CMatrix<T,NA,NB>;
+                using CMeasurementMatrixType = linalg::CMatrix<T,NC,NA>;
+                using CDirectTransferMatrixType = linalg::CMatrix<T,NC,NB>;
+
+                CSSModel(
+                    const CStateTransitionType& f_stateTransition,
+                    const CInputMatrixType& f_inputMatrix,
+                    const CMeasurementMatrixType& f_measurementMatrix
+                ) 
+                : m_stateTransition(f_stateTransition)
+                , m_inputMatrix(f_inputMatrix)
+                , m_measurementMatrix(f_measurementMatrix)
+                , m_directTransferMatrix()
+                {
+                    // do nothing
+                }
+
+                CSSModel(
+                    const CStateTransitionType& f_stateTransition,
+                    const CInputMatrixType& f_inputMatrix,
+                    const CMeasurementMatrixType& f_measurementMatrix,
+                    const CDirectTransferMatrixType& f_directTransferMatrix
+                ) 
+                : m_stateTransition(f_stateTransition)
+                , m_inputMatrix(f_inputMatrix)
+                , m_measurementMatrix(f_measurementMatrix)
+                , m_directTransferMatrix(f_directTransferMatrix)
+                {
+                    // do nothing
+                }
+
+                CSSModel(
+                    const CStateTransitionType& f_stateTransition,
+                    const CInputMatrixType& f_inputMatrix,
+                    const CMeasurementMatrixType& f_measurementMatrix,
+                    const CDirectTransferMatrixType& f_directTransferMatrix,
+                    const CStateType& f_state                    
+                ) 
+                : m_state(f_state)
+                , m_stateTransition(f_stateTransition)
+                , m_inputMatrix(f_inputMatrix)
+                , m_measurementMatrix(f_measurementMatrix)
+                , m_directTransferMatrix(f_directTransferMatrix)
+                {
+                    // do nothing
+                }
+
+                const CStateType& state() const {return m_state;} 
+                CStateType& state() {return m_state;} 
+
+                CMeasurementType operator()(const CInputType& f_input)
+                {
+                    updateState(f_input);
+
+                    return getOutput(f_input);
+                }
+
+                void updateState(const CInputType& f_input)
+                {
+                    m_state = m_stateTransition * m_state + m_measurementMatrix * f_input;
+                }
+
+                CMeasurementType getOutput(const CInputType& f_input)
+                {
+                    return m_measurementMatrix * m_state + m_directTransferMatrix * f_input;
+                }
+
+            private:
+                CSSModel() {}
+                CStateType& m_state;
+                CStateTransitionType& m_stateTransition;
+                CInputMatrixType& m_inputMatrix;
+                CMeasurementMatrixType& m_measurementMatrix;
+                CDirectTransferMatrixType& m_directTransferMatrix;
+            };
+
+            template <class T, uint32_t NA, uint32_t NB, uint32_t NC>
+            class CKalmanFilter
+            {
 
             };
         };
