@@ -15,12 +15,12 @@ public:
     , m_serialPort(f_serialPort)
     , m_imu(f_imu)
     , m_car(f_car)
-    ,m_splineinterpreter(f_splineInterpreter)
-    ,m_motionPlanner()
     , m_speed()
     , m_angle()
-    , m_isSplineActivated(false)
     , m_period_sec(f_period_sec)
+    , m_isSplineActivated(false)
+    , m_splineinterpreter(f_splineInterpreter)
+    , m_motionPlanner()
     {
 
     }
