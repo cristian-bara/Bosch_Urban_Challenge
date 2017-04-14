@@ -236,7 +236,7 @@ namespace linalg
             {
                 for (uint32_t l_col = 0; l_col < N; ++l_col)
                 {
-                    l_matrix.m_data[l_row][l_col] = 0;
+                    l_matrix[l_row][l_col] = 0;
                     for (uint32_t l_idx = 0; l_idx < P; ++l_idx)
                     {
                         l_matrix[l_row][l_col] += this->m_data[l_row][l_idx] * f_matrix[l_idx][l_col];
