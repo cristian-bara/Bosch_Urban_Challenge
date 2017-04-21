@@ -1,10 +1,10 @@
-#ifndef LINALG_H 
-#define LINALG_H 
+#ifndef LINALG_H
+#define LINALG_H
 
 #include <mbed.h>
 #include <array>
 
-namespace linalg 
+namespace linalg
 {
     template <class T, uint32_t M, uint32_t N>
     class CMatrix
@@ -70,7 +70,7 @@ namespace linalg
         {
             return m_data[f_row];
         }
- 
+
         const CDataType& operator()(uint32_t f_row, uint32_t f_col) const
         {
             return m_data[f_row][f_col];
@@ -83,7 +83,7 @@ namespace linalg
         // }
 
         CThisType& operator+() {return *this;}
-        CThisType operator-() 
+        CThisType operator-()
         {
             CThisType l_matrix;
             for (uint32_t l_row = 0; l_row < M; ++l_row)
@@ -95,7 +95,7 @@ namespace linalg
             }
             return l_matrix;
         }
-        CThisType operator+(const CThisType& f_matrix) 
+        CThisType operator+(const CThisType& f_matrix)
         {
             CThisType l_matrix;
             for (uint32_t l_row = 0; l_row < M; ++l_row)
@@ -107,7 +107,7 @@ namespace linalg
             }
             return l_matrix;
         }
-        CThisType operator-(const CThisType& f_matrix) 
+        CThisType operator-(const CThisType& f_matrix)
         {
             CThisType l_matrix;
             for (uint32_t l_row = 0; l_row < M; ++l_row)
@@ -119,7 +119,7 @@ namespace linalg
             }
             return l_matrix;
         }
-        CThisType& operator+=(const CThisType& f_matrix) 
+        CThisType& operator+=(const CThisType& f_matrix)
         {
             for (uint32_t l_row = 0; l_row < M; ++l_row)
             {
@@ -130,7 +130,7 @@ namespace linalg
             }
             return *this;
         }
-        CThisType& operator-=(const CThisType& f_matrix) 
+        CThisType& operator-=(const CThisType& f_matrix)
         {
             for (uint32_t l_row = 0; l_row < M; ++l_row)
             {
@@ -141,8 +141,8 @@ namespace linalg
             }
             return *this;
         }
-        
-        CThisType operator+(const CDataType& f_val) 
+
+        CThisType operator+(const CDataType& f_val)
         {
             CThisType l_matrix;
             for (uint32_t l_row = 0; l_row < M; ++l_row)
@@ -154,7 +154,7 @@ namespace linalg
             }
             return l_matrix;
         }
-        CThisType operator-(const CDataType& f_val) 
+        CThisType operator-(const CDataType& f_val)
         {
             CThisType l_matrix;
             for (uint32_t l_row = 0; l_row < M; ++l_row)
@@ -166,7 +166,7 @@ namespace linalg
             }
             return l_matrix;
         }
-        CThisType& operator+=(const CDataType& f_val) 
+        CThisType& operator+=(const CDataType& f_val)
         {
             for (uint32_t l_row = 0; l_row < M; ++l_row)
             {
@@ -177,7 +177,7 @@ namespace linalg
             }
             return *this;
         }
-        CThisType& operator-=(const CDataType& f_val) 
+        CThisType& operator-=(const CDataType& f_val)
         {
             for (uint32_t l_row = 0; l_row < M; ++l_row)
             {
@@ -188,7 +188,7 @@ namespace linalg
             }
             return *this;
         }
-        CThisType& operator*=(const CDataType& f_val) 
+        CThisType& operator*=(const CDataType& f_val)
         {
             for (uint32_t l_row = 0; l_row < M; ++l_row)
             {
@@ -199,13 +199,13 @@ namespace linalg
             }
             return *this;
         }
-        CThisType& operator*=(const CThisType& f_val) 
+        CThisType& operator*=(const CThisType& f_val)
         {
             CThisType& l_thisRef(*this);
             l_thisRef = l_thisRef * f_val;
             return l_thisRef;
         }
-        CThisType& operator/=(const CDataType& f_val) 
+        CThisType& operator/=(const CDataType& f_val)
         {
             for (uint32_t l_row = 0; l_row < M; ++l_row)
             {
@@ -216,7 +216,7 @@ namespace linalg
             }
             return *this;
         }
-        CThisType operator*(const CDataType& f_val) 
+        CThisType operator*(const CDataType& f_val)
         {
             CThisType l_matrix;
             for (uint32_t l_row = 0; l_row < M; ++l_row)
@@ -423,13 +423,13 @@ namespace linalg
         template <uint32_t P>
         CRightMultiplicationResultType<P> sTriL(const CRightMultipliableType<P>& f_B)
         {
-            return triLInv()*f_B;
+            // return triLInv()*f_B;
         }
 
 
     // private:
         void decompose(const CMatrix<T,N,N>& f_matrix)
-        {
+                {
             m_U = f_matrix;
             for (uint32_t l_kdx = 0; l_kdx < (N-1); ++l_kdx)
             {
@@ -466,4 +466,4 @@ namespace linalg
 
 #include <linalg.inl>
 
-#endif // LINALG_H 
+#endif // LINALG_H
