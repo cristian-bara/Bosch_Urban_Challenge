@@ -108,11 +108,12 @@ namespace filter
                 using CDirectTransferMatrixType = linalg::CMatrix<T,NC,NB>;
 
                 CSSModel(
-                    const CStateTransitionType& f_stateTransition,
+                    const CStateTransitionType& f_stateTransitionMatrix,
                     const CInputMatrixType& f_inputMatrix,
                     const CMeasurementMatrixType& f_measurementMatrix
-                )
-                : m_stateTransition(f_stateTransition)
+                ) 
+                : m_stateVector()
+                , m_stateTransitionMatrix(f_stateTransitionMatrix)
                 , m_inputMatrix(f_inputMatrix)
                 , m_measurementMatrix(f_measurementMatrix)
                 , m_directTransferMatrix()
@@ -121,12 +122,13 @@ namespace filter
                 }
 
                 CSSModel(
-                    const CStateTransitionType& f_stateTransition,
+                    const CStateTransitionType& f_stateTransitionMatrix,
                     const CInputMatrixType& f_inputMatrix,
                     const CMeasurementMatrixType& f_measurementMatrix,
                     const CDirectTransferMatrixType& f_directTransferMatrix
-                )
-                : m_stateTransition(f_stateTransition)
+                ) 
+                : m_stateVector()
+                , m_stateTransitionMatrix(f_stateTransitionMatrix)
                 , m_inputMatrix(f_inputMatrix)
                 , m_measurementMatrix(f_measurementMatrix)
                 , m_directTransferMatrix(f_directTransferMatrix)
@@ -135,14 +137,14 @@ namespace filter
                 }
 
                 CSSModel(
-                    const CStateTransitionType& f_stateTransition,
+                    const CStateTransitionType& f_stateTransitionMatrix,
                     const CInputMatrixType& f_inputMatrix,
                     const CMeasurementMatrixType& f_measurementMatrix,
                     const CDirectTransferMatrixType& f_directTransferMatrix,
-                    const CStateType& f_state
-                )
-                : m_state(f_state)
-                , m_stateTransition(f_stateTransition)
+                    const CStateType& f_state                    
+                ) 
+                : m_stateVector(f_state)
+                , m_stateTransitionMatrix(f_stateTransitionMatrix)
                 , m_inputMatrix(f_inputMatrix)
                 , m_measurementMatrix(f_measurementMatrix)
                 , m_directTransferMatrix(f_directTransferMatrix)
@@ -150,30 +152,30 @@ namespace filter
                     // do nothing
                 }
 
-                const CStateType& state() const {return m_state;}
-                CStateType& state() {return m_state;}
+                const CStateType& state() const {return m_stateVector;} 
+                CStateType& state() {return m_stateVector;} 
 
-                CMeasurementType operator()(const CInputType& f_input)
+                CMeasurementType operator()(const CInputType& f_inputVector)
                 {
-                    updateState(f_input);
+                    updateState(f_inputVector);
 
-                    return getOutput(f_input);
+                    return getOutput(f_inputVector);
                 }
 
-                void updateState(const CInputType& f_input)
+                void updateState(const CInputType& f_inputVector)
                 {
-                    m_state = m_stateTransition * m_state + m_inputMatrix * f_input;
+                  m_stateVector = m_stateTransitionMatrix * m_stateVector + m_inputMatrix * f_inputVector;
                 }
 
-                CMeasurementType getOutput(const CInputType& f_input)
+                CMeasurementType getOutput(const CInputType& f_inputVector)
                 {
-                    return m_measurementMatrix * m_state + m_directTransferMatrix * f_input;
+                    return m_measurementMatrix * m_stateVector + m_directTransferMatrix * f_inputVector;
                 }
 
             private:
                 CSSModel() {}
-                CStateType m_state;
-                CStateTransitionType m_stateTransition;
+                CStateType m_stateVector;
+                CStateTransitionType m_stateTransitionMatrix;
                 CInputMatrixType m_inputMatrix;
                 CMeasurementMatrixType m_measurementMatrix;
                 CDirectTransferMatrixType m_directTransferMatrix;

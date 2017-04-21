@@ -16,9 +16,8 @@
 #include <array>
 #include <SerialMonitor.h>
 #include <MotionController.h>
-
 #include <SplineInterpreter.h>
-
+#include <filter.h>
 #include <linalg.h>
 #include <VehicleModel.h>
 
