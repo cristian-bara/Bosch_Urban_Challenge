@@ -234,10 +234,10 @@ namespace linalg
             CRightMultiplicationResultType<P> l_matrix;
             for (uint32_t l_row = 0; l_row < M; ++l_row)
             {
-                for (uint32_t l_col = 0; l_col < N; ++l_col)
+                for (uint32_t l_col = 0; l_col < P; ++l_col)
                 {
                     l_matrix[l_row][l_col] = 0;
-                    for (uint32_t l_idx = 0; l_idx < P; ++l_idx)
+                    for (uint32_t l_idx = 0; l_idx < N; ++l_idx)
                     {
                         l_matrix[l_row][l_col] += this->m_data[l_row][l_idx] * f_matrix[l_idx][l_col];
                     }
